@@ -1,38 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { fetchBalanceSheet } from "../services/api";
+import { balanceSheetData, report } from "../types/types";
+import XeroReport from "../components/XeroReport";
 
 const _BalanceSheet = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<balanceSheetData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [report, setReport] = useState<report | null>(null);
+
 
   useEffect(() => {
-    const fetchData = () => {
-      fetchBalanceSheet().then(data => {
-        setData(data);
+    const fetchData = async () => {
+      try {
+        const data = await fetchBalanceSheet();
+        setData(data); 
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
         setLoading(false);
-      }).catch(error =>setError(error))
-      
-    }
+      }
+    };
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (data?.Reports?.[0]) {
+      setReport(data.Reports[0]);
+      setError(null)
+    }
+    else{
+      setError('An error occurred')
+    }
+  }, [data]);
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error fetching data: {error}</p>;
+  if (!report) return <p>The report cannot be found.</p>;
 
-  console.log(data)
   return (
-    <div>
-      <h1>Fetched Data</h1>
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-    </div>
+    <>
+      <XeroReport reportData={report} />
+    </>
   );
-return (
-    <div>
-      <h1>Balance sheet</h1>
-      <p>Welcome to our website!</p>
-    </div>
-);
-}
+};
+
 const BalanceSheet = React.memo(_BalanceSheet);
 export default BalanceSheet;

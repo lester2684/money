@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "experimentalDecorators": true,
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules"],
+    "target": "es2017",
+    "module": "commonjs",
+    "lib": ["es2017"]
+  }
