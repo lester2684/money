@@ -3,7 +3,7 @@ const nodeExternals = require("webpack-node-externals");
 const copyFiles = require("copy-webpack-plugin");
 
 module.exports = {
-  entry: "./index.ts",
+  entry: "./app.ts",
   target: "node",
   mode: "production",
   externals: [nodeExternals()],
@@ -18,6 +18,6 @@ module.exports = {
   ],
   output: {
     path: path2.resolve(__dirname, "dist"),
-    filename: "index.js",
+    filename: "app.js",
   },
 };
