@@ -11,6 +11,14 @@
     padding: 20px;
 }
 
+.filters{
+    display: flex;
+    align-items: center;
+    div{
+        padding:20px
+    }
+}
+
 .report {
     padding: 30px;
     background-color: #fff;

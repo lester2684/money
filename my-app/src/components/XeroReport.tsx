@@ -30,9 +30,20 @@ const XeroReport = ({ reportData }: ReportProps) => {
       </td>
     ));
 
-  const getRow = (row: row, rowIndex: number, subSectionCount: number): ReactElement[] => {
+  const getRow = (row: row, rowIndex: number, subSectionCount: number, parent?: row): ReactElement[] => {
     const rows: ReactElement[] = [];
-    const subStyling = { paddingLeft: `${subSectionCount * 20}px`, fontWeight: subSectionCount === 1? "bold": "normal"};
+    let bold = false
+    if(row?.Title?.length === 0 && row?.RowType === rowTypes.Section){
+      subSectionCount--
+    }
+    else if(parent?.RowType === rowTypes.Section && parent?.Title?.length === 0 && row?.RowType === rowTypes.Row){
+      bold = true
+      subSectionCount = subSectionCount -2
+    }
+    if(row?.RowType === rowTypes.SummaryRow || row?.RowType === rowTypes.Section){
+      bold = true
+    }
+    const subStyling = { paddingLeft: `${subSectionCount * 15}px`, fontWeight: bold ? "bold": "normal"};
 
     switch (row.RowType) {
       case rowTypes.Header:
@@ -46,7 +57,7 @@ const XeroReport = ({ reportData }: ReportProps) => {
         break;
 
       case rowTypes.Section:
-        if (row.Title) {
+        if (row.Title.length>0) {
           rows.push(
             <tr key={`section-${rowIndex}`}>
               <td colSpan={row?.Cells?.length || 3} style={subStyling}>
@@ -56,13 +67,12 @@ const XeroReport = ({ reportData }: ReportProps) => {
           );
         }
         row.Rows.forEach((nestedRow, nestedIndex) => 
-          rows.push(...getRow(nestedRow, nestedIndex, subSectionCount + 1))
+          rows.push(...getRow(nestedRow, nestedIndex, subSectionCount + 1, row))
         );
         break;
 
       case rowTypes.Row:
       case rowTypes.SummaryRow:
-        if (row.RowType === rowTypes.SummaryRow) subSectionCount = 1;
         rows.push(
           <tr key={`row-${rowIndex}`}>
             {renderCells(row.Cells, subStyling)}
@@ -78,7 +88,19 @@ const XeroReport = ({ reportData }: ReportProps) => {
 
   const tableRows = useMemo(() => {
     let subSectionCount = 1;
-    return reportData.Rows.flatMap((row, index) => getRow(row, index, subSectionCount));
+    let preRow: row;
+    return reportData.Rows.flatMap((row, index) => {
+      if(preRow?.RowType === rowTypes.Section && preRow.Rows.length === 0)
+      {
+        subSectionCount = 2
+      }
+      if(preRow?.RowType === rowTypes.Section && preRow.Title.length === 0)
+      {
+        subSectionCount > 1 && subSectionCount--
+      }
+      preRow = row
+      return getRow(row, index, subSectionCount)
+    });
   }, [reportData]);
 
   return (
