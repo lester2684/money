@@ -37,14 +37,14 @@ async function getBalanceSheet(req: Request, res: Response): Promise<void> {
     console.error("Error fetching balance sheet:", error);
 
     // Optionally send fake data
-    const fakeData = require("../fakeData.json");
-    res.status(200).json(fakeData);
+    // const fakeData = require("../fakeData.json");
+    // res.status(200).json(fakeData);
 
-    // const statusCode = error.response?.status || 500;
-    // const errorMessage =
-    //   error.response?.data?.message || "Internal Server Error";
+    const statusCode = error.response?.status || 500;
+    const errorMessage =
+      error.response?.data?.message || "Internal Server Error";
 
-    // res.status(statusCode).json({ error: errorMessage });
+    res.status(statusCode).json({ error: errorMessage });
   }
 }
 
