@@ -1,13 +1,20 @@
 const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
-export const fetchBalanceSheet = async () => {
+export const fetchBalanceSheet = async (
+  date: string,
+  periods: number,
+  timeframe: string
+) => {
   try {
-    const response = await fetch(`${API_URL}/api/balanceSheet`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${API_URL}/api/balanceSheet?date=${date}&periods=${periods}&timeframe=${timeframe}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       // Handle non-2xx responses

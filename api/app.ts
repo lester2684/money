@@ -8,9 +8,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/balanceSheet", async (req: Request, res: Response) => {
-  getBalanceSheet(req, res);
-});
+app.get(
+  "/api/balanceSheet/:date?/:periods?/:timeframe?",
+  async (req: Request, res: Response) => {
+    getBalanceSheet(req, res);
+  }
+);
 
 app.use(express.static(path.join(__dirname, "build")));
 

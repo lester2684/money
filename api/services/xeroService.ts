@@ -18,8 +18,13 @@ class RequestBody {
 }
 
 async function getBalanceSheet(req: Request, res: Response): Promise<void> {
+  var date = req.query.date;
+  var periods = req.query.periods;
+  var timeframe = req.query.timeframe;
   try {
-    const response = await http.get("/api.xro/2.0/Reports/BalanceSheet");
+    const response = await http.get(
+      `/api.xro/2.0/Reports/BalanceSheet?date=${date}&periods=${periods}&timeframe=${timeframe}`
+    );
     const data = plainToClass(RequestBody, response.data);
     const validationErrors = await validate(data);
 
@@ -32,14 +37,14 @@ async function getBalanceSheet(req: Request, res: Response): Promise<void> {
     console.error("Error fetching balance sheet:", error);
 
     // Optionally send fake data
-    // const fakeData = require("../fakeData.json");
-    // res.status(200).json(fakeData);
+    const fakeData = require("../fakeData.json");
+    res.status(200).json(fakeData);
 
-    const statusCode = error.response?.status || 500;
-    const errorMessage =
-      error.response?.data?.message || "Internal Server Error";
+    // const statusCode = error.response?.status || 500;
+    // const errorMessage =
+    //   error.response?.data?.message || "Internal Server Error";
 
-    res.status(statusCode).json({ error: errorMessage });
+    // res.status(statusCode).json({ error: errorMessage });
   }
 }
 
